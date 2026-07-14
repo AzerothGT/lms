@@ -1,0 +1,17 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-sf-primary: #0091c3;
+  --color-sf-on-primary: #ffffff;
+  --color-sf-bg: #ffffff;
+  --color-sf-secondary-bg: #f5f5f5;
+  --color-sf-text: #000000;
+  --color-sf-secondary-text: #444444;
+  --color-sf-divider: #000000;
+
+  --font-sans: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+  margin: 0;
+}
