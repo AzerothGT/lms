@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext'
 import Button from '../shared/Button'
 import Card from '../shared/Card'
 
+
 const colors = ['#0091c3', '#87d300', '#ffcc00', '#e11b22']
 const levels = ['ALL LEVELS', 'BEGINNER', 'INTERMEDIATE', 'ADVANCED']
 

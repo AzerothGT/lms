@@ -7,4 +7,5 @@ export const coursesApi = {
     ).toString()
     return api.get(`/courses${qs ? `?${qs}` : ''}`)
   },
+  create: (data) => api.post('/courses', data),
 }

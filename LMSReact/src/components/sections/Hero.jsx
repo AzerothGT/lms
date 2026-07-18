@@ -1,13 +1,11 @@
 import { Link } from 'react-router-dom'
+import GradientBar from '../shared/GradientBar'
 import Button from '../shared/Button'
 
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden border-b border-sf-divider bg-sf-secondary-bg">
-      <div
-        aria-hidden="true"
-        className="absolute inset-x-0 top-0 h-1.5 bg-[linear-gradient(90deg,#0091c3_0_25%,#87d300_25%_50%,#ffcc00_50%_75%,#e11b22_75%_100%)]"
-      />
+    <section className="border-b border-sf-divider bg-sf-secondary-bg">
+      <GradientBar />
       <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-8 py-24 max-md:px-4 max-md:py-16">
         <span className="text-[10px] font-bold tracking-[1px] text-sf-primary">
           LEARNING MANAGEMENT SYSTEM

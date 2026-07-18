@@ -6,7 +6,7 @@ export const enrollmentsApi = {
     api.post('/enrollments', {
       user_id: userId,
       course_id: courseId,
-      enrolled_at: new Date().toISOString(),
+      enrolled_at: new Date().toISOString().replace('T', ' ').slice(0, 19),
     }),
   delete: (id) => api.del(`/enrollments/${id}`),
 }

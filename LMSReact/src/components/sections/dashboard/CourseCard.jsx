@@ -1,6 +1,6 @@
 import Card from '../../shared/Card'
 import Button from '../../shared/Button'
-import { Star } from '@phosphor-icons/react'
+import { StarIcon } from '@phosphor-icons/react'
 
 const palette = ['#0091c3', '#87d300', '#ffcc00', '#e11b22']
 
@@ -46,7 +46,7 @@ export default function CourseCard({ course, index = 0, enrolled, onEnroll }) {
             <span className="text-[12px] font-bold">{instructor}</span>
           </div>
           <span className="flex items-center gap-1 text-[10px] font-bold tracking-[1px] text-sf-secondary-text">
-            <Star size={12} weight="fill" className="text-[#ffcc00]" />
+            <StarIcon size={12} weight="fill" className="text-[#ffcc00]" />
             {course.rating ?? '—'}
           </span>
         </div>

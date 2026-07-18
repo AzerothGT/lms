@@ -1,13 +1,8 @@
-import { Navigate } from 'react-router-dom'
 import BrandPanel from '../sections/BrandPanel'
 import LoginForm from '../sections/LoginForm'
 import Icon from '../shared/LogoIcon'
-import { useAuth } from '../../context/AuthContext'
 
 export default function LoginPage() {
-  const { user } = useAuth()
-  if (user) return <Navigate to="/" replace />
-
   return (
     <main className="flex min-h-screen flex-col bg-sf-bg font-sans text-sf-text">
       <div className="flex flex-1 max-md:flex-col">

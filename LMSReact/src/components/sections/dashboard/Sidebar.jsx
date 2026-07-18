@@ -1,24 +1,24 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, Link, useNavigate } from 'react-router-dom'
 import {
-  SquaresFour,
-  Books,
-  Notebook,
-  ChartLineUp,
-  Gear,
-  SignOut,
-  UsersThree,
-  ChalkboardTeacher,
+  SquaresFourIcon,
+  BooksIcon,
+  NotebookIcon,
+  ChartLineUpIcon,
+  GearIcon,
+  SignOutIcon,
+  UsersThreeIcon,
+  ChalkboardTeacherIcon,
 } from '@phosphor-icons/react'
 import { useAuth } from '../../../context/AuthContext'
 
 const nav = [
-  { to: '/dashboard', label: 'DASHBOARD', Icon: SquaresFour },
-  { to: '/dashboard/courses', label: 'COURSES', Icon: Books },
-  { to: '/assignments', label: 'ASSIGNMENTS', Icon: Notebook },
-  { to: '/reports', label: 'REPORTS', Icon: ChartLineUp },
-  { to: '/settings', label: 'SETTINGS', Icon: Gear },
-  { to: '/users', label: 'USERS', Icon: UsersThree, adminOnly: true },
-  { to: '/classes', label: 'CLASSES', Icon: ChalkboardTeacher },
+  { to: '/dashboard', label: 'DASHBOARD', Icon: SquaresFourIcon },
+  { to: '/classes', label: 'CLASSES', Icon: ChalkboardTeacherIcon },
+  { to: '/dashboard/courses', label: 'COURSES', Icon: BooksIcon },
+  { to: '/assignments', label: 'ASSIGNMENTS', Icon: NotebookIcon },
+  { to: '/reports', label: 'REPORTS', Icon: ChartLineUpIcon },
+  { to: '/users', label: 'USERS', Icon: UsersThreeIcon, adminOnly: true },
+  { to: '/settings', label: 'SETTINGS', Icon: GearIcon },
 ]
 
 function initials(name = '') {
@@ -42,13 +42,13 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="flex w-70 flex-none flex-col border-r border-sf-divider bg-sf-secondary-bg max-md:hidden">
-      <div className="flex flex-col gap-1 px-6 py-8">
+    <aside className="sticky top-0 flex h-screen w-70 flex-none flex-col border-r border-sf-divider bg-sf-secondary-bg max-md:hidden">
+      <Link to="/" className="flex flex-col gap-1 px-6 py-8">
         <span className="text-[34px] font-black leading-[0.8]">DIBI</span>
         <span className="text-[34px] font-black leading-[0.8] text-sf-primary">
           EDU
         </span>
-      </div>
+      </Link>
 
       <nav className="flex flex-1 flex-col gap-1 px-4">
         {nav
@@ -86,9 +86,9 @@ export default function Sidebar() {
           type="button"
           onClick={handleLogout}
           aria-label="Logout"
-          className="text-sf-secondary-text transition hover:text-sf-primary"
+          className="cursor-pointer text-sf-secondary-text transition hover:text-sf-primary"
         >
-          <SignOut size={20} weight="bold" />
+          <SignOutIcon size={20} weight="bold" />
         </button>
       </div>
     </aside>

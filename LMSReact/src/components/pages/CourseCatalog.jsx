@@ -1,18 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
-import { MagnifyingGlass } from '@phosphor-icons/react'
 import { coursesApi } from '../../api/courses'
 import { enrollmentsApi } from '../../api/enrollments'
 import { useAuth } from '../../context/AuthContext'
 import Button from '../shared/Button'
+import Modal from '../shared/Modal'
+import TextField from '../shared/TextField'
+import CourseFilters from '../shared/CourseFilters'
 import CourseCard from '../sections/dashboard/CourseCard'
-
-
-
-const levels = ['ALL LEVELS', 'BEGINNER', 'INTERMEDIATE', 'ADVANCED']
-
-const sorts = ['NEWEST', 'RATING']
-
-
 
 export default function CourseCatalog() {
   const { user } = useAuth()
@@ -65,6 +59,25 @@ export default function CourseCatalog() {
     return list
   }, [courses, search, level, sort])
 
+  const [showAdd, setShowAdd] = useState(false)
+  const [form, setForm] = useState({ title: '', description: '', level: 'BEGINNER', duration: '' })
+  const [creating, setCreating] = useState(false)
+
+  async function handleCreate(e) {
+    e.preventDefault()
+    setCreating(true)
+    try {
+      const created = await coursesApi.create(form)
+      setCourses((prev) => [...prev, created])
+      setForm({ title: '', description: '', level: 'BEGINNER', duration: '' })
+      setShowAdd(false)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setCreating(false)
+    }
+  }
+
   async function handleEnroll(courseId) {
     try {
       await enrollmentsApi.create(courseId, user.id)
@@ -76,7 +89,7 @@ export default function CourseCatalog() {
 
   return (
     <div className="flex flex-col gap-10">
-      <header className="flex flex-wrap items-end justify-between gap-4">
+      <header className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
           <h1 className="m-0 text-[48px] font-black leading-none">COURSE CATALOG</h1>
           <span className="text-[10px] font-bold tracking-[1px] text-sf-secondary-text">
@@ -84,54 +97,61 @@ export default function CourseCatalog() {
           </span>
         </div>
         {(user?.role === 'instructor' || user?.role === 'admin') && (
-          <Button variant="primary" size="medium">
+          <Button variant="primary" size="medium" type="button" onClick={() => setShowAdd(true)}>
             ADD COURSE
           </Button>
         )}
-        <div className="flex items-center gap-3">
-          <label className="flex w-80 items-center gap-2 rounded border border-sf-divider px-3 max-md:w-full">
-            <MagnifyingGlass size={18} className="text-sf-secondary-text" />
-            <input
-              className="w-full bg-transparent py-3 font-sans text-sf-text outline-none placeholder:text-[#888]"
-              placeholder="Search courses..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </label>
-        </div>
       </header>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <select
-          className="rounded border border-sf-divider bg-transparent px-3 py-2 text-[10px] font-bold tracking-[1px] text-sf-text outline-none"
-          value={sort}
-          onChange={(e) => setSort(e.target.value)}
-        >
-          {sorts.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
-      </div>
+      <CourseFilters level={level} setLevel={setLevel} search={search} setSearch={setSearch} sort={sort} setSort={setSort} />
 
-      <div className="flex flex-wrap items-center gap-3">
-        {levels.map((l) => (
-          <button
-            key={l}
-            type="button"
-            onClick={() => setLevel(l)}
-            className={[
-              'rounded-full border px-4 py-2 text-[10px] font-bold tracking-[1px] transition',
-              level === l
-                ? 'border-sf-primary bg-sf-primary text-sf-on-primary'
-                : 'border-sf-divider text-sf-secondary-text hover:text-sf-text',
-            ].join(' ')}
-          >
-            {l}
-          </button>
-        ))}
-      </div>
+      <Modal open={showAdd} onClose={() => setShowAdd(false)} title="ADD COURSE">
+        <form onSubmit={handleCreate} className="flex flex-col gap-4">
+          <TextField
+            label="TITLE"
+            placeholder="Course title"
+            value={form.title}
+            onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+            required
+          />
+          <TextField
+            label="DESCRIPTION"
+            as="textarea"
+            hint="Course description"
+            value={form.description}
+            onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+            required
+          />
+          <div className="flex gap-4">
+            <TextField
+              label="LEVEL"
+              as="select"
+              className="flex-1"
+              value={form.level}
+              onChange={(e) => setForm((f) => ({ ...f, level: e.target.value }))}
+            >
+              {['BEGINNER', 'INTERMEDIATE', 'ADVANCED'].map((l) => (
+                <option key={l} value={l}>{l}</option>
+              ))}
+            </TextField>
+            <TextField
+              label="DURATION (WEEKS)"
+              type="number"
+              placeholder="e.g. 8"
+              value={form.duration}
+              onChange={(e) => setForm((f) => ({ ...f, duration: e.target.value }))}
+            />
+          </div>
+          <div className="flex justify-end gap-3 pt-2">
+            <Button variant="ghost" size="medium" type="button" onClick={() => setShowAdd(false)}>
+              CANCEL
+            </Button>
+            <Button variant="primary" size="medium" type="submit" disabled={creating}>
+              {creating ? 'CREATING…' : 'CREATE COURSE'}
+            </Button>
+          </div>
+        </form>
+      </Modal>
 
       {loading && <p className="m-0 text-sm text-sf-secondary-text">Loading courses…</p>}
       {error && <p className="m-0 text-sm font-bold text-[#e11b22]">{error}</p>}

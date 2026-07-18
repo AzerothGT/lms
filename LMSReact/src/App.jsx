@@ -23,13 +23,26 @@ function RequireAuth({ children }) {
   return children
 }
 
+function RedirectIfAuth({ children }) {
+  const { user, loading } = useAuth()
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-sf-bg font-sans text-sf-secondary-text">
+        LOADING…
+      </div>
+    )
+  }
+  if (user) return <Navigate to="/dashboard" replace />
+  return children
+}
+
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/auth" element={<LoginPage />} />
+          <Route path="/auth" element={<RedirectIfAuth><LoginPage /></RedirectIfAuth>} />
           <Route path="/courses" element={<PublicCourses />} />
           <Route
             element={
