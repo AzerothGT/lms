@@ -5,7 +5,10 @@ import Home from './components/pages/Home'
 import DashboardLayout from './components/layouts/DashboardLayout'
 import Dashboard from './components/pages/Dashboard'
 import CourseCatalog from './components/pages/CourseCatalog'
+import PublicCourses from './components/pages/PublicCourses'
 import ComingSoon from './components/pages/ComingSoon'
+import Users from './components/pages/Users'
+import Classes from './components/pages/Classes'
 
 function RequireAuth({ children }) {
   const { user, loading } = useAuth()
@@ -27,6 +30,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/auth" element={<LoginPage />} />
+          <Route path="/courses" element={<PublicCourses />} />
           <Route
             element={
               <RequireAuth>
@@ -35,10 +39,12 @@ function App() {
             }
           >
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/courses" element={<CourseCatalog />} />
+            <Route path="/dashboard/courses" element={<CourseCatalog />} />
             <Route path="/assignments" element={<ComingSoon title="ASSIGNMENTS" />} />
             <Route path="/reports" element={<ComingSoon title="REPORTS" />} />
             <Route path="/settings" element={<ComingSoon title="SETTINGS" />} />
+            <Route path="/users" element={<Users />} />
+            <Route path="/classes" element={<Classes />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

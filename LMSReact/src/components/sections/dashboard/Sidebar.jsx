@@ -6,15 +6,19 @@ import {
   ChartLineUp,
   Gear,
   SignOut,
+  UsersThree,
+  ChalkboardTeacher,
 } from '@phosphor-icons/react'
 import { useAuth } from '../../../context/AuthContext'
 
 const nav = [
   { to: '/dashboard', label: 'DASHBOARD', Icon: SquaresFour },
-  { to: '/courses', label: 'COURSES', Icon: Books },
+  { to: '/dashboard/courses', label: 'COURSES', Icon: Books },
   { to: '/assignments', label: 'ASSIGNMENTS', Icon: Notebook },
   { to: '/reports', label: 'REPORTS', Icon: ChartLineUp },
   { to: '/settings', label: 'SETTINGS', Icon: Gear },
+  { to: '/users', label: 'USERS', Icon: UsersThree, adminOnly: true },
+  { to: '/classes', label: 'CLASSES', Icon: ChalkboardTeacher },
 ]
 
 function initials(name = '') {
@@ -47,7 +51,9 @@ export default function Sidebar() {
       </div>
 
       <nav className="flex flex-1 flex-col gap-1 px-4">
-        {nav.map(({ to, label, Icon }) => (
+        {nav
+          .filter(({ adminOnly }) => !adminOnly || user?.role === 'admin')
+          .map(({ to, label, Icon }) => (
           <NavLink
             key={to}
             to={to}

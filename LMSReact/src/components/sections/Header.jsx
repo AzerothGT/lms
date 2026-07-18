@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Icon from '../shared/LogoIcon'
 import Button from '../shared/Button'
 import { useAuth } from '../../context/AuthContext'
@@ -22,14 +22,22 @@ export default function Header() {
       </div>
 
       <nav className="flex items-center gap-8 max-md:hidden">
+        {user && (
+          <Link
+            to="/dashboard"
+            className="text-xs font-bold tracking-[1px] text-sf-secondary-text hover:text-sf-primary"
+          >
+            DASHBOARD
+          </Link>
+        )}
         {links.map((link) => (
-          <a
+          <Link
             key={link}
-            href="#"
+            to={`/${link.toLowerCase()}`}
             className="text-xs font-bold tracking-[1px] text-sf-secondary-text hover:text-sf-primary"
           >
             {link}
-          </a>
+          </Link>
         ))}
       </nav>
 

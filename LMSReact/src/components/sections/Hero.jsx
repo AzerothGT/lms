@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import Button from '../shared/Button'
 
 export default function Hero() {
@@ -19,12 +20,16 @@ export default function Hero() {
           courses, track progress, and grow your skills all in one place.
         </p>
         <div className="flex items-center gap-3">
-          <Button variant="primary" size="large">
-            START LEARNING
-          </Button>
-          <Button variant="outline" size="large">
-            EXPLORE COURSES
-          </Button>
+          <Link to="/auth">
+            <Button variant="primary" size="large">
+              START LEARNING
+            </Button>
+          </Link>
+          <Link to="/courses">
+            <Button variant="outline" size="large">
+              EXPLORE COURSES
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
