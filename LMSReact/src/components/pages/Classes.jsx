@@ -123,20 +123,13 @@ export default function Classes() {
                       )}
                     </div>
 
-                    <div className="flex items-center justify-between pt-1">
+                    <div className="flex items-center justify-end pt-1">
                       <Link
                         to={detailUrl}
-                        className="inline-flex items-center gap-1.5 rounded bg-sf-primary px-3 py-2 text-[10px] font-bold tracking-[1px] text-sf-on-primary transition hover:opacity-90"
+                        className="inline-flex items-center justify-center gap-1.5 rounded bg-sf-primary px-4 py-2 text-[10px] font-bold tracking-[1px] text-sf-on-primary transition hover:opacity-90 w-full"
                       >
                         <PlayIcon size={14} weight="fill" />
                         CONTINUE LEARNING
-                      </Link>
-
-                      <Link
-                        to={detailUrl}
-                        className="text-[10px] font-bold tracking-[1px] text-sf-secondary-text hover:text-sf-primary"
-                      >
-                        DETAILS →
                       </Link>
                     </div>
                   </div>
