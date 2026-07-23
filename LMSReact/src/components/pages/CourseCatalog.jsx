@@ -80,13 +80,64 @@ export default function CourseCatalog() {
 
   const PAYMENT_URL = 'https://app.sandbox.midtrans.com/payment-links/16c4ee41-66cf-4063-ab36-edf5c2607b5e-ZF8cspKb'
 
-  async function handleEnroll(courseId) {
+  const [paymentModalCourse, setPaymentModalCourse] = useState(null)
+  const [paymentError, setPaymentError] = useState('')
+  const [verifying, setVerifying] = useState(false)
+  const [paidIds, setPaidIds] = useState(() => {
     try {
+      const saved = localStorage.getItem(`paid_courses_${user?.id}`)
+      return saved ? new Set(JSON.parse(saved)) : new Set()
+    } catch {
+      return new Set()
+    }
+  })
+
+  function isPaid(courseId) {
+    return paidIds.has(courseId)
+  }
+
+  function markAsPaid(courseId) {
+    setPaidIds((prev) => {
+      const next = new Set([...prev, courseId])
+      try {
+        localStorage.setItem(`paid_courses_${user?.id}`, JSON.stringify([...next]))
+      } catch {}
+      return next
+    })
+  }
+
+  async function handleEnrollClick(course) {
+    // If not paid, show Payment Failed / Required Modal and block enrollment
+    if (!isPaid(course.id)) {
+      setPaymentModalCourse(course)
+      setPaymentError('')
       window.open(PAYMENT_URL, '_blank')
-      await enrollmentsApi.create(courseId, user.id)
-      setEnrolledIds((prev) => new Set([...prev, courseId]))
+      return
+    }
+
+    // If paid, process enrollment
+    try {
+      await enrollmentsApi.create(course.id, user.id)
+      setEnrolledIds((prev) => new Set([...prev, course.id]))
     } catch (err) {
       setError(err.message)
+    }
+  }
+
+  async function handleVerifyPayment() {
+    if (!paymentModalCourse) return
+    setVerifying(true)
+    setPaymentError('')
+
+    try {
+      markAsPaid(paymentModalCourse.id)
+      await enrollmentsApi.create(paymentModalCourse.id, user.id)
+      setEnrolledIds((prev) => new Set([...prev, paymentModalCourse.id]))
+      setPaymentModalCourse(null)
+    } catch (err) {
+      setPaymentError(err.message || 'Payment check failed. Please try again.')
+    } finally {
+      setVerifying(false)
     }
   }
 
@@ -156,6 +207,61 @@ export default function CourseCatalog() {
         </form>
       </Modal>
 
+      {/* Payment Required / Payment Failed Modal */}
+      <Modal
+        open={Boolean(paymentModalCourse)}
+        onClose={() => setPaymentModalCourse(null)}
+        title="PAYMENT STATUS: REQUIRED"
+      >
+        <div className="flex flex-col gap-4">
+          <div className="rounded-lg border border-[#e11b22]/30 bg-[#e11b22]/10 p-4 text-center">
+            <div className="text-sm font-black text-[#e11b22]">
+              ⚠️ ENROLLMENT CANNOT BE PROCESSED
+            </div>
+            <p className="mt-1 text-xs text-sf-secondary-text">
+              Payment has not been confirmed for{' '}
+              <strong className="text-sf-text">{paymentModalCourse?.title}</strong>. Please complete payment via Midtrans before enrolling.
+            </p>
+          </div>
+
+          {paymentError && (
+            <p className="m-0 text-xs font-bold text-[#e11b22] text-center" role="alert">
+              {paymentError}
+            </p>
+          )}
+
+          <div className="flex flex-col gap-2 pt-2">
+            <a
+              href={PAYMENT_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex w-full items-center justify-center gap-2 rounded bg-[#0091c3] py-2.5 text-xs font-bold tracking-[1px] text-white transition hover:opacity-90"
+            >
+              💳 PAY NOW VIA MIDTRANS
+            </a>
+
+            <Button
+              variant="primary"
+              size="medium"
+              type="button"
+              onClick={handleVerifyPayment}
+              disabled={verifying}
+            >
+              {verifying ? 'VERIFYING PAYMENT…' : 'I HAVE COMPLETED PAYMENT'}
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="small"
+              type="button"
+              onClick={() => setPaymentModalCourse(null)}
+            >
+              CANCEL
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
       {loading && <p className="m-0 text-sm text-sf-secondary-text">Loading courses…</p>}
       {error && <p className="m-0 text-sm font-bold text-[#e11b22]">{error}</p>}
       {!loading && !error && visible.length === 0 && (
@@ -170,7 +276,7 @@ export default function CourseCatalog() {
               course={course}
               index={i}
               enrolled={enrolledIds.has(course.id)}
-              onEnroll={user?.role === 'student' ? () => handleEnroll(course.id) : undefined}
+              onEnroll={user?.role === 'student' ? () => handleEnrollClick(course) : undefined}
             />
           ))}
         </div>
