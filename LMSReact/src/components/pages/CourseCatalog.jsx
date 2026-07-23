@@ -78,7 +78,7 @@ export default function CourseCatalog() {
     }
   }
 
-  const PAYMENT_URL = 'https://app.sandbox.midtrans.com/payment-links/16c4ee41-66cf-4063-ab36-edf5c2607b5e-ZF8cspKb'
+  const PAYMENT_URL = 'https://app.sandbox.midtrans.com/payment-links/2c59615f-def9-4096-9398-d7d79bfe4ccc-7PrveYpy'
 
   const [paymentModalCourse, setPaymentModalCourse] = useState(null)
   const [paymentError, setPaymentError] = useState('')
