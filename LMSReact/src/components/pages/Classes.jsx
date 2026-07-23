@@ -68,7 +68,8 @@ export default function Classes() {
         <div className="grid grid-cols-3 gap-6 max-md:grid-cols-1 max-lg:grid-cols-2">
           {enrollments.map((enrollment, i) => {
             const course = enrollment.course || {}
-            const detailUrl = `/classes/${course.id}`
+            const courseId = course.id ?? enrollment.course_id
+            const detailUrl = courseId ? `/classes/${courseId}` : '#'
             const color = colors[i % colors.length]
             const instructor = course.instructor?.name ?? 'Academic Faculty'
             const level = String(course.level ?? 'ALL LEVELS').toUpperCase()
