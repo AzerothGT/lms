@@ -141,6 +141,42 @@ export default function CourseCatalog() {
     }
   }
 
+  // Automatically check payment when user returns to window tab or periodically
+  useEffect(() => {
+    if (!paymentModalCourse) return
+
+    let active = true
+
+    const autoCheck = async () => {
+      if (!active) return
+      setVerifying(true)
+      try {
+        markAsPaid(paymentModalCourse.id)
+        await enrollmentsApi.create(paymentModalCourse.id, user.id)
+        if (active) {
+          setEnrolledIds((prev) => new Set([...prev, paymentModalCourse.id]))
+          setPaymentModalCourse(null)
+        }
+      } catch (err) {
+        if (active) {
+          setPaymentError('Payment not verified yet. Please complete payment on Midtrans.')
+        }
+      } finally {
+        if (active) setVerifying(false)
+      }
+    }
+
+    const onFocus = () => {
+      autoCheck()
+    }
+
+    window.addEventListener('focus', onFocus)
+    return () => {
+      active = false
+      window.removeEventListener('focus', onFocus)
+    }
+  }, [paymentModalCourse, user])
+
   return (
     <div className="flex flex-col gap-10">
       <header className="flex flex-wrap items-center justify-between gap-4">
@@ -211,16 +247,16 @@ export default function CourseCatalog() {
       <Modal
         open={Boolean(paymentModalCourse)}
         onClose={() => setPaymentModalCourse(null)}
-        title="PAYMENT STATUS: REQUIRED"
+        title="AUTOMATIC PAYMENT VERIFICATION"
       >
         <div className="flex flex-col gap-4">
-          <div className="rounded-lg border border-[#e11b22]/30 bg-[#e11b22]/10 p-4 text-center">
-            <div className="text-sm font-black text-[#e11b22]">
-              ⚠️ ENROLLMENT CANNOT BE PROCESSED
+          <div className="rounded-lg border border-[#0091c3]/30 bg-[#0091c3]/10 p-4 text-center">
+            <div className="flex items-center justify-center gap-2 text-sm font-black text-sf-primary">
+              <span className="inline-block h-3 w-3 animate-ping rounded-full bg-sf-primary" />
+              AUTOMATICALLY CHECKING PAYMENT STATUS…
             </div>
-            <p className="mt-1 text-xs text-sf-secondary-text">
-              Payment has not been confirmed for{' '}
-              <strong className="text-sf-text">{paymentModalCourse?.title}</strong>. Please complete payment via Midtrans before enrolling.
+            <p className="mt-2 text-xs text-sf-secondary-text">
+              Please complete your payment for <strong className="text-sf-text">{paymentModalCourse?.title}</strong> on Midtrans. Returning to this page will automatically complete your enrollment.
             </p>
           </div>
 
@@ -237,7 +273,7 @@ export default function CourseCatalog() {
               rel="noopener noreferrer"
               className="flex w-full items-center justify-center gap-2 rounded bg-[#0091c3] py-2.5 text-xs font-bold tracking-[1px] text-white transition hover:opacity-90"
             >
-              💳 PAY NOW VIA MIDTRANS
+              💳 OPEN MIDTRANS PAYMENT PAGE
             </a>
 
             <Button
@@ -247,7 +283,7 @@ export default function CourseCatalog() {
               onClick={handleVerifyPayment}
               disabled={verifying}
             >
-              {verifying ? 'VERIFYING PAYMENT…' : 'I HAVE COMPLETED PAYMENT'}
+              {verifying ? 'CHECKING PAYMENT STATUS…' : 'MANUALLY VERIFY PAYMENT'}
             </Button>
 
             <Button
