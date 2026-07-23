@@ -43,14 +43,25 @@ export default function Courses() {
     try {
       await enrollmentsApi.create(courseId, user.id)
       setEnrolledIds((prev) => new Set([...prev, courseId]))
+      setCourses((prev) =>
+        prev.map((c) =>
+          c.id === courseId
+            ? { ...c, enrolled_count: (c.enrolled_count ?? 0) + 1 }
+            : c,
+        ),
+      )
     } catch (err) {
       setError(err.message)
     }
   }
 
-  const filtered = level === 'ALL LEVELS'
-    ? courses
-    : courses.filter((c) => c.level?.toLowerCase() === level.toLowerCase())
+  const filtered = (
+    level === 'ALL LEVELS'
+      ? courses
+      : courses.filter((c) => c.level?.toLowerCase() === level.toLowerCase())
+  )
+    .slice()
+    .sort((a, b) => (b.enrolled_count ?? 0) - (a.enrolled_count ?? 0))
 
   return (
     <section className="mx-auto w-full max-w-6xl px-8 py-20 max-md:px-4 max-md:py-12">
