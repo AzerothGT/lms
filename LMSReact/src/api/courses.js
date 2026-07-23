@@ -7,5 +7,8 @@ export const coursesApi = {
     ).toString()
     return api.get(`/courses${qs ? `?${qs}` : ''}`)
   },
+  getById: (id) => api.get(`/courses/${id}`),
   create: (data) => api.post('/courses', data),
+  update: (id, data) => api.put(`/courses/${id}`, data),
+  delete: (id) => api.del(`/courses/${id}`),
 }

@@ -1,7 +1,11 @@
-import { MagnifyingGlassIcon, CaretDownIcon } from '@phosphor-icons/react'
+import { MagnifyingGlassIcon } from '@phosphor-icons/react'
+import Dropdown from './Dropdown'
 
 const levels = ['ALL LEVELS', 'BEGINNER', 'INTERMEDIATE', 'ADVANCED']
-const sorts = ['NEWEST', 'RATING']
+const sorts = [
+  { value: 'NEWEST', label: 'NEWEST FIRST' },
+  { value: 'RATING', label: 'HIGHEST RATED' },
+]
 
 function LevelFilters({ level, setLevel }) {
   return levels.map((l) => (
@@ -10,7 +14,7 @@ function LevelFilters({ level, setLevel }) {
       type="button"
       onClick={() => setLevel(l)}
       className={[
-        'h-10 rounded-full border px-4 text-[10px] font-bold tracking-[1px] transition',
+        'h-10 rounded-full border px-4 text-[10px] font-bold tracking-[1px] transition cursor-pointer',
         level === l
           ? 'border-sf-primary bg-sf-primary text-sf-on-primary'
           : 'border-sf-divider text-sf-secondary-text hover:text-sf-text',
@@ -37,20 +41,14 @@ function SearchInput({ value, onChange }) {
 
 function SortSelect({ value, onChange }) {
   return (
-    <label className="relative ml-auto">
-      <select
-        className="h-10 appearance-none rounded border border-sf-divider bg-transparent pl-3 pr-8 text-[10px] font-bold tracking-[1px] text-sf-text outline-none"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      >
-        {sorts.map((s) => (
-          <option key={s} value={s}>
-            {s}
-          </option>
-        ))}
-      </select>
-      <CaretDownIcon size={12} weight="bold" className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-sf-secondary-text" />
-    </label>
+    <Dropdown
+      value={value}
+      onChange={onChange}
+      options={sorts}
+      fullWidth={false}
+      size="medium"
+      className="ml-auto min-w-[160px]"
+    />
   )
 }
 

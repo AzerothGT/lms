@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react'
 import { usersApi } from '../../api/users'
 import Button from '../shared/Button'
-import Card from '../shared/Card'
+import Dropdown from '../shared/Dropdown'
+import Modal from '../shared/Modal'
+import TextField from '../shared/TextField'
+import { PlusIcon } from '@phosphor-icons/react'
 
 const roleColors = {
   admin: '#e11b22',
@@ -14,9 +17,16 @@ export default function Users() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
+
+  // Form modal state
   const [showForm, setShowForm] = useState(false)
+  const [editingId, setEditingId] = useState(null)
   const [form, setForm] = useState({ name: '', email: '', password: '', role: 'student' })
   const [submitting, setSubmitting] = useState(false)
+
+  // Delete modal state
+  const [deletingUser, setDeletingUser] = useState(null)
+  const [deleting, setDeleting] = useState(false)
 
   function load() {
     setLoading(true)
@@ -39,13 +49,42 @@ export default function Users() {
     )
   })
 
-  async function handleCreate(e) {
+  function resetForm() {
+    setForm({ name: '', email: '', password: '', role: 'student' })
+    setEditingId(null)
+    setShowForm(false)
+  }
+
+  function handleEditClick(user) {
+    setEditingId(user.id)
+    setForm({
+      name: user.name || '',
+      email: user.email || '',
+      password: '',
+      role: user.role || 'student',
+    })
+    setShowForm(true)
+  }
+
+  async function handleSubmit(e) {
     e.preventDefault()
     setSubmitting(true)
+    setError('')
     try {
-      await usersApi.create(form)
-      setForm({ name: '', email: '', password: '', role: 'student' })
-      setShowForm(false)
+      if (editingId) {
+        const payload = {
+          name: form.name,
+          email: form.email,
+          role: form.role,
+        }
+        if (form.password.trim()) {
+          payload.password = form.password
+        }
+        await usersApi.update(editingId, payload)
+      } else {
+        await usersApi.create(form)
+      }
+      resetForm()
       load()
     } catch (err) {
       setError(err.message)
@@ -54,13 +93,17 @@ export default function Users() {
     }
   }
 
-  async function handleDelete(id) {
-    if (!confirm('Delete this user?')) return
+  async function confirmDelete() {
+    if (!deletingUser) return
+    setDeleting(true)
     try {
-      await usersApi.delete(id)
-      setUsers((prev) => prev.filter((u) => u.id !== id))
+      await usersApi.delete(deletingUser.id)
+      setUsers((prev) => prev.filter((u) => u.id !== deletingUser.id))
+      setDeletingUser(null)
     } catch (err) {
       setError(err.message)
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -68,7 +111,7 @@ export default function Users() {
     <div className="flex flex-col gap-8">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <h1 className="m-0 text-[48px] font-black leading-none">USER MANAGEMENT</h1>
+          <h1 className="m-0 text-[48px] font-black leading-none max-md:text-[32px]">USER MANAGEMENT</h1>
           <span className="text-[10px] font-bold tracking-[1px] text-sf-secondary-text">
             MANAGE {users.length} USERS
           </span>
@@ -82,55 +125,18 @@ export default function Users() {
               onChange={(e) => setSearch(e.target.value)}
             />
           </label>
-          <Button variant="primary" size="medium" onClick={() => setShowForm(!showForm)}>
-            {showForm ? 'CANCEL' : 'ADD USER'}
+          <Button
+            variant="primary"
+            size="medium"
+            onClick={() => {
+              resetForm()
+              setShowForm(true)
+            }}
+          >
+            <PlusIcon size={16} className="mr-1 inline" /> ADD USER
           </Button>
         </div>
       </header>
-
-      {showForm && (
-        <Card className="flex flex-col gap-4 p-6">
-          <h3 className="m-0 text-lg font-black">NEW USER</h3>
-          <form onSubmit={handleCreate} className="flex flex-wrap items-end gap-4">
-            <input
-              required
-              className="flex-1 min-w-40 rounded border border-sf-divider bg-transparent px-4 py-3 text-sm outline-none"
-              placeholder="Name"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-            />
-            <input
-              required
-              type="email"
-              className="flex-1 min-w-40 rounded border border-sf-divider bg-transparent px-4 py-3 text-sm outline-none"
-              placeholder="Email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-            />
-            <input
-              required
-              type="password"
-              className="flex-1 min-w-40 rounded border border-sf-divider bg-transparent px-4 py-3 text-sm outline-none"
-              placeholder="Password (min 8 chars)"
-              minLength={8}
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-            />
-            <select
-              className="rounded border border-sf-divider bg-transparent px-4 py-3 text-sm outline-none"
-              value={form.role}
-              onChange={(e) => setForm({ ...form, role: e.target.value })}
-            >
-              <option value="student">STUDENT</option>
-              <option value="instructor">INSTRUCTOR</option>
-              <option value="admin">ADMIN</option>
-            </select>
-            <Button variant="primary" size="medium" type="submit" disabled={submitting}>
-              {submitting ? 'CREATING...' : 'CREATE'}
-            </Button>
-          </form>
-        </Card>
-      )}
 
       {error && <p className="m-0 text-sm font-bold text-[#e11b22]">{error}</p>}
 
@@ -165,14 +171,24 @@ export default function Users() {
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <Button
-                      variant="ghost"
-                      size="small"
-                      type="button"
-                      onClick={() => handleDelete(u.id)}
-                    >
-                      DELETE
-                    </Button>
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="small"
+                        type="button"
+                        onClick={() => handleEditClick(u)}
+                      >
+                        EDIT
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="small"
+                        type="button"
+                        onClick={() => setDeletingUser(u)}
+                      >
+                        DELETE
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -180,6 +196,72 @@ export default function Users() {
           </table>
         </div>
       )}
+
+      {/* User Create / Edit Modal */}
+      <Modal open={showForm} onClose={resetForm} title={editingId ? 'EDIT USER' : 'NEW USER'}>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <TextField
+            label="FULL NAME"
+            placeholder="User full name"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            required
+          />
+          <TextField
+            label="EMAIL ADDRESS"
+            type="email"
+            placeholder="user@example.com"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            required
+          />
+          <TextField
+            label="PASSWORD"
+            type="password"
+            placeholder={editingId ? 'New password (optional)' : 'Min 8 characters'}
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            required={!editingId}
+            minLength={form.password ? 8 : undefined}
+          />
+          <Dropdown
+            label="USER ROLE"
+            value={form.role}
+            onChange={(val) => setForm({ ...form, role: val })}
+            options={[
+              { value: 'student', label: 'STUDENT', description: 'Access student courses & materials' },
+              { value: 'instructor', label: 'INSTRUCTOR', description: 'Create & manage assigned courses' },
+              { value: 'admin', label: 'ADMIN', description: 'Full system administration' },
+            ]}
+          />
+
+          <div className="flex justify-end gap-3 pt-2">
+            <Button variant="ghost" size="medium" type="button" onClick={resetForm}>
+              CANCEL
+            </Button>
+            <Button variant="primary" size="medium" type="submit" disabled={submitting}>
+              {submitting ? (editingId ? 'SAVING...' : 'CREATING...') : editingId ? 'UPDATE USER' : 'CREATE USER'}
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Delete User Confirmation Modal */}
+      <Modal open={!!deletingUser} onClose={() => setDeletingUser(null)} title="DELETE USER">
+        <div className="flex flex-col gap-4">
+          <p className="m-0 text-sm text-sf-secondary-text">
+            Are you sure you want to delete <strong className="text-sf-text">{deletingUser?.name}</strong> ({deletingUser?.email})? This action cannot be undone.
+          </p>
+          <div className="flex justify-end gap-3 pt-2">
+            <Button variant="ghost" size="medium" type="button" onClick={() => setDeletingUser(null)}>
+              CANCEL
+            </Button>
+            <Button variant="primary" size="medium" type="button" onClick={confirmDelete} disabled={deleting}>
+              {deleting ? 'DELETING...' : 'CONFIRM DELETE'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }

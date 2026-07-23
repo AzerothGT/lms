@@ -5,8 +5,11 @@ import Home from './components/pages/Home'
 import DashboardLayout from './components/layouts/DashboardLayout'
 import Dashboard from './components/pages/Dashboard'
 import CourseCatalog from './components/pages/CourseCatalog'
+import CourseDetail from './components/pages/CourseDetail'
 import PublicCourses from './components/pages/PublicCourses'
-import ComingSoon from './components/pages/ComingSoon'
+import Assignments from './components/pages/Assignments'
+import Reports from './components/pages/Reports'
+import Settings from './components/pages/Settings'
 import Users from './components/pages/Users'
 import Classes from './components/pages/Classes'
 
@@ -44,6 +47,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/auth" element={<RedirectIfAuth><LoginPage /></RedirectIfAuth>} />
           <Route path="/courses" element={<PublicCourses />} />
+          <Route path="/courses/:id" element={<CourseDetail />} />
           <Route
             element={
               <RequireAuth>
@@ -53,9 +57,10 @@ function App() {
           >
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/dashboard/courses" element={<CourseCatalog />} />
-            <Route path="/assignments" element={<ComingSoon title="ASSIGNMENTS" />} />
-            <Route path="/reports" element={<ComingSoon title="REPORTS" />} />
-            <Route path="/settings" element={<ComingSoon title="SETTINGS" />} />
+            <Route path="/dashboard/courses/:id" element={<CourseDetail />} />
+            <Route path="/assignments" element={<Assignments />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="/users" element={<Users />} />
             <Route path="/classes" element={<Classes />} />
           </Route>

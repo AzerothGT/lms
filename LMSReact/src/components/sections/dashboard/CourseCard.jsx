@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import Card from '../../shared/Card'
 import Button from '../../shared/Button'
 import { StarIcon } from '@phosphor-icons/react'
@@ -18,10 +19,11 @@ export default function CourseCard({ course, index = 0, enrolled, onEnroll }) {
   const color = palette[index % palette.length]
   const instructor = course.instructor?.name ?? 'Unknown'
   const level = String(course.level ?? '').toUpperCase()
+  const detailUrl = `/dashboard/courses/${course.id}`
 
   return (
-    <Card className="flex flex-col overflow-hidden">
-      <div className="h-28 w-full" style={{ backgroundColor: color }} aria-hidden="true" />
+    <Card className="flex flex-col overflow-hidden transition hover:shadow-lg">
+      <Link to={detailUrl} className="h-28 w-full block" style={{ backgroundColor: color }} aria-label={course.title} />
       <div className="flex flex-col gap-3 p-5">
         <div className="flex items-center justify-between">
           <span className="rounded bg-sf-secondary-bg px-2 py-1 text-[10px] font-bold tracking-[1px]">
@@ -32,8 +34,10 @@ export default function CourseCard({ course, index = 0, enrolled, onEnroll }) {
           </span>
         </div>
 
-        <h3 className="m-0 text-base font-black leading-tight">{course.title}</h3>
-        <p className="m-0 text-sm text-sf-secondary-text">{course.description}</p>
+        <Link to={detailUrl} className="m-0 text-base font-black leading-tight hover:text-sf-primary transition">
+          {course.title}
+        </Link>
+        <p className="m-0 text-sm text-sf-secondary-text line-clamp-2">{course.description}</p>
 
         <div className="mt-2 flex items-center justify-between border-t border-sf-divider pt-3">
           <div className="flex items-center gap-2">
@@ -51,20 +55,27 @@ export default function CourseCard({ course, index = 0, enrolled, onEnroll }) {
           </span>
         </div>
 
-        {onEnroll && (
-          <div className="mt-2">
-            {enrolled ? (
-              <span className="text-[10px] font-bold tracking-[1px] text-sf-primary">
-                ENROLLED
-              </span>
-            ) : (
-              <Button variant="primary" size="small" type="button" onClick={onEnroll}>
-                ENROLL
-              </Button>
-            )}
-          </div>
-        )}
+        <div className="mt-2 flex items-center justify-between">
+          <Link to={detailUrl} className="text-[10px] font-bold tracking-[1px] text-sf-secondary-text hover:text-sf-primary">
+            VIEW DETAILS →
+          </Link>
+
+          {onEnroll && (
+            <div>
+              {enrolled ? (
+                <span className="text-[10px] font-bold tracking-[1px] text-sf-primary">
+                  ENROLLED
+                </span>
+              ) : (
+                <Button variant="primary" size="small" type="button" onClick={onEnroll}>
+                  ENROLL
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </Card>
   )
 }
+

@@ -8,5 +8,6 @@ export const usersApi = {
     return api.get(`/users${qs ? `?${qs}` : ''}`)
   },
   create: (data) => api.post('/users', data),
+  update: (id, data) => api.put(`/users/${id}`, data),
   delete: (id) => api.del(`/users/${id}`),
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CourseCategoryController;
 use App\Http\Controllers\CourseController;
@@ -7,6 +8,13 @@ use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+Route::get("/", function () {
+    return response()->json([
+        "status" => "online",
+        "message" => "LMS API is running",
+    ]);
+});
 
 Route::post("/register", [AuthController::class, "register"]);
 Route::post("/login", [AuthController::class, "login"])->name("login");
@@ -26,6 +34,8 @@ Route::middleware("auth:sanctum")->group(function () {
     )->parameters(["categories" => "id"]);
     Route::apiResource("users", UserController::class);
     Route::apiResource("enrollments", EnrollmentController::class);
+    Route::apiResource("assignments", AssignmentController::class);
+    Route::post("/assignments/{id}/submit", [AssignmentController::class, "submit"]);
 });
 
 Route::apiResource("courses", CourseController::class)->only(["index", "show"])->parameters(["courses" => "id"]);

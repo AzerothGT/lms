@@ -9,6 +9,10 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
+        $admins = [
+            ["name" => "Admin User", "email" => "admin@example.com", "password" => bcrypt("password"), "role" => "admin"],
+        ];
+
         $instructors = [
             ["name" => "Jane Instructor", "email" => "jane@example.com", "password" => bcrypt("password"), "role" => "instructor"],
             ["name" => "John Instructor", "email" => "john@example.com", "password" => bcrypt("password"), "role" => "instructor"],
@@ -22,6 +26,10 @@ class UserSeeder extends Seeder
             ["name" => "Diana Student", "email" => "diana@example.com", "password" => bcrypt("password"), "role" => "student"],
             ["name" => "Eve Student", "email" => "eve@example.com", "password" => bcrypt("password"), "role" => "student"],
         ];
+
+        foreach ($admins as $admin) {
+            User::create($admin);
+        }
 
         foreach ($instructors as $instructor) {
             User::create($instructor);
