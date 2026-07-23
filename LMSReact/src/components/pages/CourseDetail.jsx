@@ -90,8 +90,8 @@ export default function CourseDetail() {
       <div className="flex flex-col items-center gap-4 p-12 text-center">
         <h2 className="text-2xl font-black text-[#e11b22]">Course Not Found</h2>
         <p className="text-sm text-sf-secondary-text">{error || 'The requested course does not exist.'}</p>
-        <Button variant="primary" size="medium" onClick={() => navigate('/dashboard/courses')}>
-          RETURN TO CATALOG
+        <Button variant="primary" size="medium" onClick={() => navigate('/classes')}>
+          RETURN TO MY CLASSES
         </Button>
       </div>
     )
