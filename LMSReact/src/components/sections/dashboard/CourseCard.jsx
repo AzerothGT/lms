@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Card from '../../shared/Card'
 import Button from '../../shared/Button'
@@ -15,7 +16,21 @@ function initials(name = '') {
     .toUpperCase()
 }
 
-export default function CourseCard({ course, index = 0, enrolled, onEnroll }) {
+export default function CourseCard({ course, index = 0, enrolled, onEnroll, loading: externalLoading = false }) {
+  const [enrolling, setEnrolling] = useState(false)
+  const isLoading = externalLoading || enrolling
+
+  const handleEnroll = async (e) => {
+    if (!onEnroll || isLoading) return
+    setEnrolling(true)
+    try {
+      await onEnroll(e)
+    } catch (err) {
+    } finally {
+      setEnrolling(false)
+    }
+  }
+
   const color = palette[index % palette.length]
   const instructor = course.instructor?.name ?? 'Unknown'
   const level = String(course.level ?? '').toUpperCase()
@@ -67,8 +82,14 @@ export default function CourseCard({ course, index = 0, enrolled, onEnroll }) {
                   ENROLLED
                 </span>
               ) : (
-                <Button variant="primary" size="small" type="button" onClick={onEnroll}>
-                  ENROLL
+                <Button
+                  variant="primary"
+                  size="small"
+                  type="button"
+                  onClick={handleEnroll}
+                  loading={isLoading}
+                >
+                  {isLoading ? 'ENROLLING...' : 'ENROLL'}
                 </Button>
               )}
             </div>
