@@ -59,6 +59,38 @@ export default function LoginForm() {
       </header>
 
       {!isLogin && (
+        <div className="flex flex-col gap-2">
+          <span className="text-[10px] font-bold tracking-[1px] text-sf-secondary-text">
+            I AM A
+          </span>
+          <div className="flex items-center gap-6">
+            <label className="flex cursor-pointer items-center gap-2 text-xs font-bold tracking-[1px] text-sf-text select-none">
+              <input
+                type="radio"
+                name="role"
+                value="student"
+                checked={form.role === 'student'}
+                onChange={update('role')}
+                className="h-4 w-4 accent-sf-primary cursor-pointer"
+              />
+              STUDENT
+            </label>
+            <label className="flex cursor-pointer items-center gap-2 text-xs font-bold tracking-[1px] text-sf-text select-none">
+              <input
+                type="radio"
+                name="role"
+                value="instructor"
+                checked={form.role === 'instructor'}
+                onChange={update('role')}
+                className="h-4 w-4 accent-sf-primary cursor-pointer"
+              />
+              INSTRUCTOR
+            </label>
+          </div>
+        </div>
+      )}
+
+      {!isLogin && (
         <TextField
           label="FULL NAME"
           hint="Jane Doe"
@@ -93,22 +125,6 @@ export default function LoginForm() {
           </div>
         )}
       </div>
-
-      {!isLogin && (
-        <label className="flex flex-col gap-1">
-          <span className="text-[10px] font-bold tracking-[1px] text-sf-secondary-text">
-            I AM A
-          </span>
-          <select
-            className="rounded border border-sf-divider bg-transparent px-3 py-3 font-sans text-sf-text outline-none"
-            value={form.role}
-            onChange={update('role')}
-          >
-            <option value="student">STUDENT</option>
-            <option value="instructor">INSTRUCTOR</option>
-          </select>
-        </label>
-      )}
 
       {error && (
         <p className="m-0 text-xs font-bold text-[#e11b22]" role="alert">
