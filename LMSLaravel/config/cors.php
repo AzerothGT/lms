@@ -10,6 +10,7 @@ return [
         'http://127.0.0.1:5174',
         'http://localhost:3000',
         'https://lmsreact.vercel.app',
+        'https://lmslaravel.vercel.app',
     ],
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],
