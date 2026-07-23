@@ -47,7 +47,6 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/auth" element={<RedirectIfAuth><LoginPage /></RedirectIfAuth>} />
           <Route path="/courses" element={<PublicCourses />} />
-          <Route path="/courses/:id" element={<CourseDetail />} />
           <Route
             element={
               <RequireAuth>
@@ -57,10 +56,8 @@ function App() {
           >
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/dashboard/courses" element={<CourseCatalog />} />
-            <Route path="/dashboard/courses/:id" element={<CourseDetail />} />
             <Route path="/classes" element={<Classes />} />
             <Route path="/classes/:id" element={<CourseDetail />} />
-            <Route path="/dashboard/classes/:id" element={<CourseDetail />} />
             <Route path="/assignments" element={<Assignments />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/settings" element={<Settings />} />
