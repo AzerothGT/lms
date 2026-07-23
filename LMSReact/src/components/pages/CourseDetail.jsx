@@ -75,6 +75,7 @@ export default function CourseDetail() {
     try {
       await enrollmentsApi.create(Number(id), user.id)
       setEnrolled(true)
+      window.open('https://app.sandbox.midtrans.com/payment-links/16c4ee41-66cf-4063-ab36-edf5c2607b5e-ZF8cspKb', '_blank')
     } catch (err) {
       setError(err.message)
     }

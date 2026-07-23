@@ -4,6 +4,7 @@ import Button from '../../shared/Button'
 import { StarIcon } from '@phosphor-icons/react'
 
 const palette = ['#0091c3', '#87d300', '#ffcc00', '#e11b22']
+const PAYMENT_URL = 'https://app.sandbox.midtrans.com/payment-links/16c4ee41-66cf-4063-ab36-edf5c2607b5e-ZF8cspKb'
 
 function initials(name = '') {
   return name
@@ -24,6 +25,7 @@ export default function CourseCard({ course, index = 0, enrolled, onEnroll, load
     setEnrolling(true)
     try {
       await onEnroll(e)
+      window.open(PAYMENT_URL, '_blank')
     } catch (err) {
     } finally {
       setEnrolling(false)
