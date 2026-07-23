@@ -25,5 +25,9 @@ $_ENV['APP_ROUTES_CACHE'] = '/tmp/bootstrap/cache/routes.php';
 $_ENV['APP_EVENTS_CACHE'] = '/tmp/bootstrap/cache/events.php';
 $_ENV['VIEW_COMPILED_PATH'] = $tmpStorage . '/framework/views';
 
+// Fix Vercel SCRIPT_NAME path issue so Laravel routes /api/* correctly without 404
+$_SERVER['SCRIPT_NAME'] = '/index.php';
+$_SERVER['SCRIPT_FILENAME'] = __DIR__ . '/../public/index.php';
+
 // Forward execution to Laravel's public entrypoint
 require __DIR__ . '/../public/index.php';
