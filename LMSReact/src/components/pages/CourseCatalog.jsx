@@ -78,8 +78,11 @@ export default function CourseCatalog() {
     }
   }
 
+  const PAYMENT_URL = 'https://app.sandbox.midtrans.com/payment-links/16c4ee41-66cf-4063-ab36-edf5c2607b5e-ZF8cspKb'
+
   async function handleEnroll(courseId) {
     try {
+      window.open(PAYMENT_URL, '_blank')
       await enrollmentsApi.create(courseId, user.id)
       setEnrolledIds((prev) => new Set([...prev, courseId]))
     } catch (err) {

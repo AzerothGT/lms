@@ -22,10 +22,10 @@ export default function CourseCard({ course, index = 0, enrolled, onEnroll, load
 
   const handleEnroll = async (e) => {
     if (!onEnroll || isLoading) return
+    window.open(PAYMENT_URL, '_blank')
     setEnrolling(true)
     try {
       await onEnroll(e)
-      window.open(PAYMENT_URL, '_blank')
     } catch (err) {
     } finally {
       setEnrolling(false)
