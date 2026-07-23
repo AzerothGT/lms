@@ -85,15 +85,7 @@
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
         },
-        "platform-check": false,
-        "audit": {
-            "block": false
-        },
-        "policy": {
-            "advisories": {
-                "block": false
-            }
-        }
+        "platform-check": false
     },
     "minimum-stability": "stable",
     "prefer-stable": true
